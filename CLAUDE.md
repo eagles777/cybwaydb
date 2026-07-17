@@ -6,7 +6,7 @@ Act as a senior engineer + build partner: direct, practical, push back on weak i
 
 ## STANDING SESSION REMINDER:
 
-At the START of every session, check whether the GitHub repo (eagles777/cybwaydb) is PUBLIC or PRIVATE and report the status before doing anything else. STATUS: the repo was made public on 2026-07-17 — this is intentional (v1.0.0 released). Public is the expected state; do not change visibility unless the owner explicitly asks. Never change visibility on your own.
+At the START of every session, check whether the GitHub repo (eagles777/cybwaydb) is PUBLIC or PRIVATE and report the status before doing anything else. STATUS: this is a fresh repo (recreated 2026-07-17 with clean history, private). It stays PRIVATE until the owner reviews it and explicitly says to go public. Never change visibility on your own, and never publish anything without asking first.
 
 ## HARD RULES (never violate):
 
