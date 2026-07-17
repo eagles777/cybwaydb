@@ -1,0 +1,38 @@
+{
+  "provider": "gemini",
+  "model": "gemini-flash-lite-latest",
+  "n_runs": 3,
+  "rules_total": 17,
+  "ground_truth_violations": 17,
+  "precision": 1.0,
+  "recall": 0.9412,
+  "f1": 0.9697,
+  "budget_ceiling_usd": 2.0,
+  "spent_usd_estimate": 0.03,
+  "per_run": [
+    {
+      "run": 0,
+      "tp": 16,
+      "fp": 0,
+      "fn": 1,
+      "checker_verified": 16,
+      "quarantined": 0
+    },
+    {
+      "run": 1,
+      "tp": 16,
+      "fp": 0,
+      "fn": 1,
+      "checker_verified": 16,
+      "quarantined": 0
+    },
+    {
+      "run": 2,
+      "tp": 16,
+      "fp": 0,
+      "fn": 1,
+      "checker_verified": 16,
+      "quarantined": 0
+    }
+  ]
+}

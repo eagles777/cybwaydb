@@ -1,0 +1,45 @@
+{
+  "files": {
+    "audit.log.jsonl": "3a48bba01b1596141792ec235eb35bbcf708d7d1863e7a117261f04197f6e8cd",
+    "live_benchmark.json": "46cd653db80e9fca033539da73f79e2895f6b4e58d6a86c98fe3bf17a60d0cc2"
+  },
+  "manifest_sha256": "94196906e9fc46be51ab2a75deb58584ab156b23f49b52ba6f6ac5c4e6f097b9",
+  "summary": {
+    "budget_ceiling_usd": 2.0,
+    "f1": 0.9697,
+    "ground_truth_violations": 17,
+    "model": "gemini-flash-lite-latest",
+    "n_runs": 3,
+    "per_run": [
+      {
+        "checker_verified": 16,
+        "fn": 1,
+        "fp": 0,
+        "quarantined": 0,
+        "run": 0,
+        "tp": 16
+      },
+      {
+        "checker_verified": 16,
+        "fn": 1,
+        "fp": 0,
+        "quarantined": 0,
+        "run": 1,
+        "tp": 16
+      },
+      {
+        "checker_verified": 16,
+        "fn": 1,
+        "fp": 0,
+        "quarantined": 0,
+        "run": 2,
+        "tp": 16
+      }
+    ],
+    "precision": 1.0,
+    "provider": "gemini",
+    "recall": 0.9412,
+    "rules_total": 17,
+    "spent_usd_estimate": 0.03
+  }
+}

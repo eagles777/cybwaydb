@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cybwaydb — Interactive Compliance Demo</title>
+<style>
+:root{
+  --ground:#eef1f5; --surface:#ffffff; --surface-2:#f6f8fb; --ink:#0f1a26;
+  --muted:#5a6b7d; --line:#dce2ea; --accent:#0e7fb8; --accent-soft:#e3f1f9;
+  --high:#c0362c; --med:#b0741a; --low:#4a6785; --pass:#1f7a4d;
+  --high-soft:#f8e6e4; --med-soft:#f7edda; --pass-soft:#e2f1ea;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ground:#0d141d; --surface:#141d28; --surface-2:#1a2634; --ink:#e7eef6;
+  --muted:#93a4b8; --line:#26333f; --accent:#38bdf8; --accent-soft:#0f3247;
+  --high:#f2645a; --med:#e0a13c; --low:#8299b8; --pass:#48c98a;
+  --high-soft:#2a1614; --med-soft:#2a2011; --pass-soft:#12271d;}}
+:root[data-theme="dark"]{
+  --ground:#0d141d; --surface:#141d28; --surface-2:#1a2634; --ink:#e7eef6;
+  --muted:#93a4b8; --line:#26333f; --accent:#38bdf8; --accent-soft:#0f3247;
+  --high:#f2645a; --med:#e0a13c; --low:#8299b8; --pass:#48c98a;
+  --high-soft:#2a1614; --med-soft:#2a2011; --pass-soft:#12271d;}
+:root[data-theme="light"]{
+  --ground:#eef1f5; --surface:#ffffff; --surface-2:#f6f8fb; --ink:#0f1a26;
+  --muted:#5a6b7d; --line:#dce2ea; --accent:#0e7fb8; --accent-soft:#e3f1f9;
+  --high:#c0362c; --med:#b0741a; --low:#4a6785; --pass:#1f7a4d;
+  --high-soft:#f8e6e4; --med-soft:#f7edda; --pass-soft:#e2f1ea;}
+*{box-sizing:border-box}
+body{margin:0}
+.root{
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  background:var(--ground); color:var(--ink); font-family:var(--sans);
+  line-height:1.55; padding:32px 20px; -webkit-font-smoothing:antialiased;}
+.wrap{max-width:1120px; margin:0 auto; display:flex; flex-direction:column; gap:22px}
+.label{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px}
+.head{border-bottom:1px solid var(--line); padding-bottom:18px; display:flex; flex-direction:column; gap:6px}
+.head h1{font-size:29px; font-weight:680; margin:0; letter-spacing:-.01em}
+.head .sub{color:var(--muted); font-size:14px; max-width:70ch}
+.privacy{display:flex; align-items:center; gap:10px; background:var(--pass-soft); color:var(--pass);
+  border:1px solid color-mix(in srgb,var(--pass) 30%,transparent); border-radius:10px; padding:11px 15px;
+  font-size:13px; font-weight:600}
+.privacy .d{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.grid{display:grid; grid-template-columns:minmax(0,380px) minmax(0,1fr); gap:20px; align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.panel{padding:18px; display:flex; flex-direction:column; gap:18px}
+.panel h2{font-size:13px; font-family:var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:0}
+.fg{display:flex; flex-direction:column; gap:11px}
+.fg .gl{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-weight:700}
+.field{display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:13.5px}
+.field label{color:var(--ink); flex:1}
+.field .rid{font-family:var(--mono); font-size:10.5px; color:var(--muted)}
+select,input[type=text],input[type=number]{font-family:var(--mono); font-size:12.5px; background:var(--surface-2);
+  color:var(--ink); border:1px solid var(--line); border-radius:7px; padding:5px 8px; min-width:118px}
+.tog{position:relative; width:42px; height:23px; flex:none}
+.tog input{opacity:0; width:0; height:0; position:absolute}
+.tog .sl{position:absolute; inset:0; background:var(--line); border-radius:999px; cursor:pointer; transition:.15s}
+.tog .sl::before{content:""; position:absolute; width:17px; height:17px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.15s}
+.tog input:checked + .sl{background:var(--pass)}
+.tog input:checked + .sl::before{transform:translateX(19px)}
+.tog input:focus-visible + .sl{outline:2px solid var(--accent); outline-offset:2px}
+.actions{display:flex; gap:9px; flex-wrap:wrap}
+.btn{font-family:var(--mono); font-size:12px; padding:8px 13px; border-radius:8px; border:1px solid var(--line);
+  background:var(--surface-2); color:var(--ink); cursor:pointer; font-weight:600}
+.btn.p{background:var(--accent); color:#fff; border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.results{display:flex; flex-direction:column; gap:16px}
+.summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px}
+.kpi{padding:14px; display:flex; flex-direction:column; gap:5px}
+.kpi .v{font-size:24px; font-weight:680; font-family:var(--mono); font-variant-numeric:tabular-nums; line-height:1}
+.kpi .v.warn{color:var(--high)} .kpi .v.ok{color:var(--pass)} .kpi .v.high{color:var(--high)} .kpi .v.med{color:var(--med)}
+.kpi .cap{font-size:11.5px; color:var(--muted)}
+.find{display:flex; flex-direction:column; gap:9px}
+.f{display:grid; grid-template-columns:5px 1fr; overflow:hidden; border:1px solid var(--line); border-radius:10px; background:var(--surface)}
+.f .stripe{background:var(--low)} .f.high .stripe{background:var(--high)} .f.medium .stripe{background:var(--med)} .f.low .stripe{background:var(--low)}
+.f.pass .stripe{background:var(--pass)}
+.f .b{padding:12px 15px; display:flex; flex-direction:column; gap:8px; min-width:0}
+.f .top{display:flex; flex-wrap:wrap; align-items:center; gap:9px}
+.f .rid{font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:600}
+.f .title{font-weight:600; font-size:14px; flex:1; min-width:200px}
+.pill{font-family:var(--mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase; padding:3px 8px; border-radius:999px; font-weight:700; white-space:nowrap}
+.pill.high{color:var(--high); background:var(--high-soft)} .pill.medium{color:var(--med); background:var(--med-soft)}
+.pill.low{color:var(--low); background:var(--surface-2)} .pill.fail{color:var(--high); background:var(--high-soft)}
+.pill.pass{color:var(--pass); background:var(--pass-soft)}
+.ev{display:flex; flex-wrap:wrap; gap:6px}
+.ev .chip{font-family:var(--mono); font-size:11.5px; background:var(--surface-2); border:1px solid var(--line); padding:3px 8px; border-radius:6px}
+.sql{font-family:var(--mono); font-size:12px; background:var(--surface-2); border:1px solid var(--line); border-radius:7px; padding:9px 11px; overflow-x:auto; white-space:pre}
+.refs{display:flex; flex-wrap:wrap; gap:6px}
+.refs .r{font-family:var(--mono); font-size:10.5px; color:var(--muted)}
+.refs .r::before{content:"§ "}
+.foot{border-top:1px solid var(--line); padding-top:16px; color:var(--muted); font-size:12px; display:flex; flex-direction:column; gap:5px}
+.foot b{color:var(--ink)}
+.foot a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="root"><div class="wrap">
+  <header class="head">
+    <span class="label">Governed-AI database compliance auditor · interactive demo</span>
+    <h1>Cybwaydb</h1>
+    <span class="sub">Change the synthetic Oracle-style security settings on the left. The 17 DISA&nbsp;STIG&nbsp;/&nbsp;NIST&nbsp;SP&nbsp;800-53 checks re-run instantly on the right — the same rule logic the full tool uses.</span>
+  </header>
+
+  <div class="privacy"><span class="d"></span>Runs entirely in your browser. No data leaves this page, no account, no API key, no cost. All values are synthetic.</div>
+
+  <div class="grid">
+    <form class="panel card" id="cfg" aria-label="Security configuration">
+      <h2>Security configuration</h2>
+
+      <div class="fg">
+        <span class="gl">Password profile</span>
+        <div class="field"><label for="fla">Failed login attempts <span class="rid">CYB-001</span></label>
+          <select id="fla"><option>UNLIMITED</option><option>10</option><option>5</option><option selected>3</option></select></div>
+        <div class="field"><label for="plt">Password lifetime (days) <span class="rid">CYB-002</span></label>
+          <select id="plt"><option>UNLIMITED</option><option>180</option><option>90</option><option selected>60</option></select></div>
+        <div class="field"><label for="pvf">Password verify function <span class="rid">CYB-003</span></label>
+          <select id="pvf"><option value="NULL">NULL (none)</option><option selected value="ORA12C_STIG">ORA12C_STIG</option></select></div>
+        <div class="field"><label for="prm">Password reuse max <span class="rid">CYB-004</span></label>
+          <select id="prm"><option>UNLIMITED</option><option>3</option><option selected>5</option><option>10</option></select></div>
+        <div class="field"><label for="idle">Idle time (min) <span class="rid">CYB-005</span></label>
+          <select id="idle"><option>UNLIMITED</option><option>30</option><option selected>15</option></select></div>
+      </div>
+
+      <div class="fg">
+        <span class="gl">Accounts</span>
+        <div class="field"><label for="scott">Demo account SCOTT locked <span class="rid">CYB-006</span></label>
+          <span class="tog"><input type="checkbox" id="scott"><span class="sl"></span></span></div>
+        <div class="field"><label for="dbsnmp">Demo account DBSNMP locked <span class="rid">CYB-006</span></label>
+          <span class="tog"><input type="checkbox" id="dbsnmp"><span class="sl"></span></span></div>
+        <div class="field"><label for="exp">Expired accounts also locked <span class="rid">CYB-007</span></label>
+          <span class="tog"><input type="checkbox" id="exp"><span class="sl"></span></span></div>
+      </div>
+
+      <div class="fg">
+        <span class="gl">Privileges</span>
+        <div class="field"><label for="dba">DBA role held by ordinary user <span class="rid">CYB-008</span></label>
+          <span class="tog"><input type="checkbox" id="dba" checked><span class="sl"></span></span></div>
+        <div class="field"><label for="pub">PUBLIC holds roles/privileges <span class="rid">CYB-009</span></label>
+          <span class="tog"><input type="checkbox" id="pub" checked><span class="sl"></span></span></div>
+        <div class="field"><label for="any">'ANY' privilege to ordinary user <span class="rid">CYB-010</span></label>
+          <span class="tog"><input type="checkbox" id="any" checked><span class="sl"></span></span></div>
+        <div class="field"><label for="admin">Privilege WITH ADMIN OPTION <span class="rid">CYB-011</span></label>
+          <span class="tog"><input type="checkbox" id="admin" checked><span class="sl"></span></span></div>
+      </div>
+
+      <div class="fg">
+        <span class="gl">Auditing &amp; parameters</span>
+        <div class="field"><label for="audit">audit_trail <span class="rid">CYB-012</span></label>
+          <select id="audit"><option value="NONE">NONE</option><option selected value="DB,EXTENDED">DB,EXTENDED</option></select></div>
+        <div class="field"><label for="logon">Logon (CREATE SESSION) audited <span class="rid">CYB-013</span></label>
+          <span class="tog"><input type="checkbox" id="logon" checked><span class="sl"></span></span></div>
+        <div class="field"><label for="rlpf">remote_login_passwordfile <span class="rid">CYB-014</span></label>
+          <select id="rlpf"><option value="SHARED">SHARED</option><option selected value="EXCLUSIVE">EXCLUSIVE</option><option value="NONE">NONE</option></select></div>
+        <div class="field"><label for="o7">o7_dictionary_accessibility <span class="rid">CYB-015</span></label>
+          <select id="o7"><option value="TRUE">TRUE</option><option selected value="FALSE">FALSE</option></select></div>
+        <div class="field"><label for="rl">resource_limit <span class="rid">CYB-016</span></label>
+          <select id="rl"><option value="FALSE">FALSE</option><option selected value="TRUE">TRUE</option></select></div>
+      </div>
+
+      <div class="fg">
+        <span class="gl">Patch currency</span>
+        <div class="field"><label for="cpu">Last Oracle CPU applied <span class="rid">CYB-017</span></label>
+          <select id="cpu"><option value="2025-10-21">Oct 2025 (behind)</option><option value="2026-01-20">Jan 2026</option><option value="2026-04-14">Apr 2026</option><option selected value="2026-07-14">Jul 2026 (current)</option></select></div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn p" id="bad">Load an insecure database</button>
+        <button type="button" class="btn" id="good">Load a hardened database</button>
+      </div>
+    </form>
+
+    <div class="results">
+      <div class="summary" id="summary"></div>
+      <div class="find" id="findings"></div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span><b>Synthetic data only.</b> No real database, credential, or organizational data. Educational/demonstration use.</span>
+    <span>A personal portfolio project by <b>V. Vikram</b> · Apache-2.0 · Defensive security only. DISA STIG / NIST are public-domain US Government works, cited by rule ID.</span>
+  </footer>
+</div></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const SCAN_DATE = new Date(2026, 6, 17); // frozen reference date (Jul 17 2026)
+
+// --- Oracle CPU cycle helper (mirrors patchwatch.py) ---
+const CPU_MONTHS = [1,4,7,10];
+const KNOWN = {"2025-10":"2025-10-21"};
+function cpuDate(y,m){
+  const k = y+"-"+String(m).padStart(2,"0");
+  if(KNOWN[k]) return new Date(KNOWN[k]+"T00:00:00");
+  const anchor = new Date(y, m-1, 17);
+  const off = (anchor.getDay()-2+7)%7;         // days back to Tuesday
+  const prev = new Date(y, m-1, 17-off);
+  const next = new Date(y, m-1, 17-off+7);
+  return (anchor-prev)<=(next-anchor) ? prev : next;
+}
+function currentCycle(d){
+  let best=null;
+  for(const y of [d.getFullYear()-1,d.getFullYear()]) for(const m of CPU_MONTHS){
+    const c=cpuDate(y,m); if(c<=d && (!best||c>best)) best=c;
+  }
+  return best;
+}
+function cyclesBehind(applied,d){
+  let n=0;
+  for(const y of [d.getFullYear()-1,d.getFullYear()]) for(const m of CPU_MONTHS){
+    const c=cpuDate(y,m); if(c<=d && c>applied) n++;
+  }
+  return n;
+}
+
+// --- The 17 rules (mirror rules.py) ---
+function evaluate(c){
+  const F=[];
+  const add=(id,title,sev,ok,refs,ev,sql)=>F.push({id,title,sev,status:ok?"PASS":"FAIL",refs,ev:ok?[]:ev,sql:ok?"":sql});
+  const numBad=(v,max)=> v==="UNLIMITED" || (parseInt(v)>max);
+
+  add("CYB-001","Limit failed logons to 3 or fewer","medium", !numBad(c.fla,3),
+      ["DISA SV-219899","NIST AC-7"], ["FAILED_LOGIN_ATTEMPTS = "+c.fla], "ALTER PROFILE DEFAULT LIMIT FAILED_LOGIN_ATTEMPTS 3;");
+  add("CYB-002","Password lifetime 60 days or fewer","medium", !numBad(c.plt,60),
+      ["DISA SV-219965","NIST IA-5(1)"], ["PASSWORD_LIFE_TIME = "+c.plt], "ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME 60;");
+  add("CYB-003","Password complexity verify function set","high", c.pvf!=="NULL",
+      ["DISA SV-219967","NIST IA-5(1)"], ["PASSWORD_VERIFY_FUNCTION = "+c.pvf], "ALTER PROFILE DEFAULT LIMIT PASSWORD_VERIFY_FUNCTION ORA12C_STIG_VERIFY_FUNCTION;");
+  add("CYB-004","Restrict password reuse (>= 5)","medium", !(c.prm==="UNLIMITED"||parseInt(c.prm)<5),
+      ["NIST IA-5(1)(e)"], ["PASSWORD_REUSE_MAX = "+c.prm], "ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_MAX 5;");
+  add("CYB-005","Idle sessions limited to 15 min","medium", !numBad(c.idle,15),
+      ["DISA SV-219839","NIST SC-10"], ["IDLE_TIME = "+c.idle], "ALTER PROFILE DEFAULT LIMIT IDLE_TIME 15;");
+
+  const openDemo=[]; if(!c.scott) openDemo.push("SCOTT is OPEN"); if(!c.dbsnmp) openDemo.push("DBSNMP is OPEN");
+  add("CYB-006","Default/demo accounts locked","high", openDemo.length===0,
+      ["DISA SV-219869","NIST AC-2, CM-6"], openDemo, "ALTER USER SCOTT ACCOUNT LOCK PASSWORD EXPIRE;");
+  add("CYB-007","Expired accounts also locked","medium", c.exp,
+      ["NIST AC-2(3)"], ["OLD_SVC_FAKE is EXPIRED, not locked"], "ALTER USER OLD_SVC_FAKE ACCOUNT LOCK;");
+  add("CYB-008","DBA role not held by ordinary users","high", !c.dba,
+      ["DISA SV-219855","NIST AC-6"], ["DBA granted to JDOE_FAKE"], "REVOKE DBA FROM JDOE_FAKE;");
+  add("CYB-009","PUBLIC holds no roles/privileges","high", !c.pub,
+      ["DISA SV-219858","NIST AC-6, CM-7"], ["PUBLIC has EXECUTE ANY PROCEDURE"], "REVOKE EXECUTE ANY PROCEDURE FROM PUBLIC;");
+  add("CYB-010","No 'ANY' privileges to ordinary users","high", !c.any,
+      ["DISA SV-219853","NIST AC-6(1)"], ["JDOE_FAKE has SELECT ANY TABLE"], "REVOKE SELECT ANY TABLE FROM JDOE_FAKE;");
+  add("CYB-011","No privileges WITH ADMIN OPTION","medium", !c.admin,
+      ["NIST AC-6(2)"], ["OLD_SVC_FAKE has ALTER SYSTEM WITH ADMIN OPTION"], "REVOKE ALTER SYSTEM FROM OLD_SVC_FAKE; GRANT ALTER SYSTEM TO OLD_SVC_FAKE;");
+
+  add("CYB-012","Database auditing enabled","high", c.audit!=="NONE",
+      ["DISA SV-219828","NIST AU-2, AU-12"], ["audit_trail = "+c.audit], "ALTER SYSTEM SET audit_trail='DB,EXTENDED' SCOPE=SPFILE;");
+  add("CYB-013","Logon events audited","medium", c.logon,
+      ["DISA SV-219833","NIST AU-2, AC-7"], ["CREATE SESSION auditing not configured"], "AUDIT CREATE SESSION BY ACCESS;");
+  add("CYB-014","remote_login_passwordfile EXCLUSIVE/NONE","medium", c.rlpf!=="SHARED",
+      ["DISA SV-220016","NIST IA-5, CM-6"], ["remote_login_passwordfile = "+c.rlpf], "ALTER SYSTEM SET remote_login_passwordfile='EXCLUSIVE' SCOPE=SPFILE;");
+  add("CYB-015","o7_dictionary_accessibility FALSE","high", c.o7==="FALSE",
+      ["DISA SV-219850","NIST AC-3, CM-6"], ["o7_dictionary_accessibility = "+c.o7], "ALTER SYSTEM SET o7_dictionary_accessibility=FALSE SCOPE=SPFILE;");
+  add("CYB-016","resource_limit TRUE","low", c.rl==="TRUE",
+      ["NIST SC-6, CM-6"], ["resource_limit = "+c.rl], "ALTER SYSTEM SET resource_limit=TRUE SCOPE=BOTH;");
+
+  const applied=new Date(c.cpu+"T00:00:00"); const cur=currentCycle(SCAN_DATE); const behind=cyclesBehind(applied,SCAN_DATE);
+  add("CYB-017","Patched to current Oracle CPU cycle","high", behind===0,
+      ["NIST SI-2","Oracle CPU calendar"], ["last CPU applied "+c.cpu+"; "+behind+" cycle(s) behind (current "+cur.toISOString().slice(0,10)+")"],
+      "-- Apply the current quarterly CPU/RU via opatch/datapatch per Oracle's advisory.");
+  return F;
+}
+
+function readCfg(){
+  return {fla:$("fla").value, plt:$("plt").value, pvf:$("pvf").value, prm:$("prm").value, idle:$("idle").value,
+    scott:$("scott").checked, dbsnmp:$("dbsnmp").checked, exp:$("exp").checked,
+    dba:$("dba").checked, pub:$("pub").checked, any:$("any").checked, admin:$("admin").checked,
+    audit:$("audit").value, logon:$("logon").checked, rlpf:$("rlpf").value, o7:$("o7").value, rl:$("rl").value, cpu:$("cpu").value};
+}
+const esc = s => String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+const SEV={high:0,medium:1,low:2};
+
+function render(){
+  const F=evaluate(readCfg());
+  const fail=F.filter(f=>f.status==="FAIL");
+  const hi=fail.filter(f=>f.sev==="high").length;
+  $("summary").innerHTML=
+    kpi("accent",F.length,"checks run")+
+    kpi(fail.length?"warn":"ok",fail.length,"failing")+
+    kpi(hi?"high":"ok",hi,"high severity")+
+    kpi(fail.length?"warn":"ok",Math.round((F.length-fail.length)/F.length*100)+"%","compliant");
+  F.sort((a,b)=> (a.status==="FAIL"?0:1)-(b.status==="FAIL"?0:1) || SEV[a.sev]-SEV[b.sev] || a.id.localeCompare(b.id));
+  $("findings").innerHTML=F.map(f=>{
+    const cls=f.status==="PASS"?"pass":f.sev;
+    const ev=f.ev.map(e=>`<span class="chip">${esc(e)}</span>`).join("");
+    const sql=f.sql?`<div class="sql">${esc(f.sql)}</div>`:"";
+    const refs=f.refs.map(r=>`<span class="r">${esc(r)}</span>`).join("");
+    const sp=f.status==="PASS"?`<span class="pill pass">pass</span>`:`<span class="pill ${f.sev}">${f.sev}</span><span class="pill fail">fail</span>`;
+    return `<div class="f ${cls}"><div class="stripe"></div><div class="b">
+      <div class="top"><span class="rid">${f.id}</span><span class="title">${esc(f.title)}</span>${sp}</div>
+      ${ev?`<div class="ev">${ev}</div>`:""}${sql}<div class="refs">${refs}</div></div></div>`;
+  }).join("");
+}
+function kpi(c,v,cap){return `<div class="kpi card"><span class="v ${c}">${v}</span><span class="cap">${cap}</span></div>`;}
+
+const INSECURE={fla:"UNLIMITED",plt:"UNLIMITED",pvf:"NULL",prm:"UNLIMITED",idle:"UNLIMITED",
+  scott:false,dbsnmp:false,exp:false,dba:true,pub:true,any:true,admin:true,
+  audit:"NONE",logon:false,rlpf:"SHARED",o7:"TRUE",rl:"FALSE",cpu:"2025-10-21"};
+const HARDENED={fla:"3",plt:"60",pvf:"ORA12C_STIG",prm:"5",idle:"15",
+  scott:true,dbsnmp:true,exp:true,dba:false,pub:false,any:false,admin:false,
+  audit:"DB,EXTENDED",logon:true,rlpf:"EXCLUSIVE",o7:"FALSE",rl:"TRUE",cpu:"2026-07-14"};
+function apply(c){
+  for(const k of ["fla","plt","pvf","prm","idle","audit","rlpf","o7","rl","cpu"]) $(k).value=c[k];
+  for(const k of ["scott","dbsnmp","exp","dba","pub","any","admin","logon"]) $(k).checked=c[k];
+  render();
+}
+$("cfg").addEventListener("input",render);
+$("bad").addEventListener("click",()=>apply(INSECURE));
+$("good").addEventListener("click",()=>apply(HARDENED));
+apply(INSECURE);
+</script>
+</body>
+</html>
