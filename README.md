@@ -44,7 +44,7 @@ Measured against deterministic ground truth (the rule engine on the same raw con
 | **Live — Google Gemini** | **1.000** | **0.941** | **0.970** | 3 | $0.00 (free tier) |
 | Mock (harness validation) | 0.999 | 0.897 | 0.945 | 50 | $0.00 |
 
-See [`BENCHMARKS.md`](BENCHMARKS.md). Live runs are budget-capped in code ($2 hard ceiling, charged before every call).
+See [`BENCHMARKS.md`](BENCHMARKS.md) and the [NIST AI RMF control mapping](docs/NIST_AI_RMF_MAPPING.md) (GOVERN / MAP / MEASURE / MANAGE, each row cited to source). Live runs are budget-capped in code ($2 hard ceiling, charged before every call).
 
 ## What's inside
 

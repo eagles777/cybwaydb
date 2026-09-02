@@ -10,6 +10,7 @@ Apache-2.0. Copyright © V. Vikram. See `LICENSE` and `NOTICE`.
 |---|---|---|
 | DISA STIGs (Oracle Database STIG) | US Government work, public domain | Rule logic and rule-ID citations (e.g. SV-219899) |
 | NIST SP 800-53 rev5 / FISMA guidance | US Government work, public domain | Control-ID citations (e.g. AC-7, IA-5(1), AU-2) |
+| NIST AI RMF 1.0 (NIST AI 100-1) | US Government work, public domain | Function/category identifiers in `docs/NIST_AI_RMF_MAPPING.md` (self-assessed mapping, not a conformance claim) |
 | Oracle Critical Patch Update calendar | Facts (dates) are not copyrightable | We state dates and link to Oracle's page; we never copy Oracle text |
 | OWASP LLM Top 10 | Referenced by name with attribution to OWASP | Category names only, in the red-team suite |
 | CIS Benchmarks | **Copyrighted — EXCLUDED** | Not used anywhere in this repo; enforced by `policy_lint` |
